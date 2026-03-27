@@ -9,7 +9,7 @@ if isinstance(loaded_obj, dict):
 else:
     model = loaded_obj
 
-st.write(type(loaded_obj))
+# st.write(type(loaded_obj))
 
 # Page settings
 st.set_page_config(
