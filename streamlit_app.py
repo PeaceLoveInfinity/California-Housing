@@ -2,7 +2,14 @@ import streamlit as st
 import joblib
 
 # Load model
-model = joblib.load("california_clean.joblib")
+loaded_obj = joblib.load("california_clean.joblib")
+
+if isinstance(loaded_obj, dict):
+    model = loaded_obj.get("model", list(loaded_obj.values())[0])
+else:
+    model = loaded_obj
+
+st.write(type(loaded_obj))
 
 # Page settings
 st.set_page_config(
