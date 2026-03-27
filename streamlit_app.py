@@ -1,5 +1,8 @@
 import streamlit as st
-import requests
+import joblib
+
+# Load model
+model = joblib.load("california_clean.joblib")
 
 # Page settings
 st.set_page_config(
@@ -27,7 +30,7 @@ Model Input Features:
 """
 )
 
-st.sidebar.info("FastAPI + Docker + Streamlit Demo")
+st.sidebar.info("Streamlit ML App")
 
 # Input section
 st.subheader("Enter Housing Features")
@@ -59,33 +62,28 @@ st.markdown("---")
 # Predict button
 if st.button("Predict House Price", use_container_width=True):
 
-    url = "http://localhost:8000/predict"
-
-    params = {
-        "MedInc": MedInc,
-        "HouseAge": HouseAge,
-        "AveRooms": AveRooms,
-        "Population": Population,
-        "AveOccup": AveOccup,
-        "Latitude": Latitude
-    }
-
     with st.spinner("Predicting..."):
 
-        response = requests.get(url, params=params)
+        try:
+            # Prepare input for model
+            input_data = [[
+                MedInc,
+                HouseAge,
+                AveRooms,
+                Population,
+                AveOccup,
+                Latitude
+            ]]
 
-        if response.status_code == 200:
-
-            prediction = response.json()
-
-            price = prediction["Predicted House Price"]
+            # Make prediction
+            prediction = model.predict(input_data)[0]
 
             st.success("Prediction Completed!")
 
             st.metric(
                 label="Predicted House Price ($)",
-                value=f"${price:,.2f}"
+                value=f"${prediction:,.2f}"
             )
 
-        else:
-            st.error("API Error. Please check FastAPI server.")
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
